@@ -1,6 +1,9 @@
 from typing import Dict, Set
 import networkx as nx
 import matplotlib.pyplot as plt
+import json
+
+JSON_CACHE = "grafo.json"
 
 class Grafo:
     def __init__(self) -> None:
@@ -52,35 +55,43 @@ class Grafo:
         if not self.nodes:
             print("O grafo está vazio.")
             return
-
-        # Cria um grafo NetworkX
         G = nx.Graph()
-
-        # Adiciona os nodes ao grafo NetworkX
         G.add_nodes_from(self.nodes)
-
-        # Adiciona as arestas com pesos (distâncias)
-        exibidos = set()  # Evita duplicatas nas ligações bidirecionais
+        exibidos = set()
         for node in self.nodes:
             for vizinho, distancia in self.ligacoes[node].items():
                 par = tuple(sorted([node, vizinho]))
                 if par not in exibidos:
                     exibidos.add(par)
                     G.add_edge(node, vizinho, weight=distancia)
-
-        # Configura o layout do grafo (spring layout é um bom padrão)
         pos = nx.spring_layout(G)
-
-        # Desenha o grafo
         plt.figure(figsize=(8, 6))
         nx.draw(G, pos, with_labels=True, node_color='lightblue', node_size=500, font_size=10, font_weight='bold')
         labels = nx.get_edge_attributes(G, 'weight')
         nx.draw_networkx_edge_labels(G, pos, edge_labels=labels)
-
-        # Destaca o Centro de Distribuição com uma cor diferente
         node_colors = ['red' if node == "Centro de Distribuição" else 'lightblue' for node in G.nodes()]
         nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=500)
-
-        # Exibe o grafo
         plt.title("Visualização do Grafo de Entregas")
         plt.show()
+
+    def salvar_json(self) -> None:
+        grafo_data = {
+            "nodes": list(self.nodes),
+            "ligacoes": self.ligacoes
+        }
+        with open(JSON_CACHE, 'w') as f:
+            json.dump(grafo_data, f, indent=4)
+        print(f"Grafo salvo em {JSON_CACHE}")
+
+    def carregar_json(self) -> None:
+        try:
+            with open(JSON_CACHE, 'r') as f:
+                grafo_data = json.load(f)
+            self.nodes = set(grafo_data["nodes"])
+            self.ligacoes = {node: {vizinho: float(dist) for vizinho, dist in conexoes.items()} 
+                            for node, conexoes in grafo_data["ligacoes"].items()}
+            print(f"Grafo carregado de {JSON_CACHE}")
+        except FileNotFoundError:
+            print(f"Arquivo {JSON_CACHE} não encontrado.")
+        except Exception as e:
+            print(f"Erro ao carregar o grafo: {e}")

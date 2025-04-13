@@ -3,12 +3,22 @@ from grafo import Grafo
 from pedidos import Pedidos
 from rota import calcular_rota
 from relatorio import gerar_relatorio
+from database import Database
 from typing import List, Tuple
 
 def menu() -> None:
+    # Configurações do banco de dados Oracle (credenciais carregadas do .env)
+    db = Database()
+    db.conectar()
+    # db.criar_tabelas()  # Descomente na primeira execução para criar as tabelas
+
     grafo: Grafo = Grafo()
     grafo.adicionar_node("Centro de Distribuição")
     pedidos: Pedidos = Pedidos()
+    
+    # Carregando dados do cache
+    grafo.carregar_json()
+    pedidos.carregar_json()
 
     while True:
         opcao: str = questionary.select(
@@ -23,6 +33,8 @@ def menu() -> None:
                 "Listar pedidos",
                 "Calcular rota e gerar relatório",
                 "Exibir grafo",
+                "Carregar pedidos e grafo do banco de dados",
+                "Salvar grafo no banco de dados",
                 "Sair"
             ]
         ).ask()
@@ -100,9 +112,25 @@ def menu() -> None:
         elif opcao == "Exibir grafo":
             grafo.exibir_grafo()
         
+        elif opcao == "Carregar pedidos e grafo do banco de dados":
+            grafos_salvos: List[str] = db.listar_grafos()
+            if not grafos_salvos:
+                print("Nenhum grafo salvo no banco de dados.")
+                continue
+            nome_grafo: str = questionary.select("Escolha o grafo para carregar:", choices=grafos_salvos).ask()
+            db.carregar_grafo(nome_grafo, grafo, pedidos)
+        
+        elif opcao == "Salvar grafo no banco de dados":
+            nome_grafo: str = questionary.text("Digite o nome do grafo para salvar:").ask()
+            db.salvar_grafo(nome_grafo, grafo, pedidos)
+        
         elif opcao == "Sair":
             print("Saindo...")
+            db.desconectar()
+            # salvando dados no cache
+            grafo.salvar_json()
+            pedidos.salvar_json()
             break
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     menu()

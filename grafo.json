@@ -1,0 +1,26 @@
+{
+    "nodes": [
+        "Centro de Distribui\u00e7\u00e3o",
+        "Fazenda 1",
+        "Fazenda 2",
+        "Fazenda 3"
+    ],
+    "ligacoes": {
+        "Centro de Distribui\u00e7\u00e3o": {
+            "Fazenda 1": 10.0,
+            "Fazenda 2": 15.0
+        },
+        "Fazenda 1": {
+            "Centro de Distribui\u00e7\u00e3o": 10.0,
+            "Fazenda 3": 7.0
+        },
+        "Fazenda 2": {
+            "Centro de Distribui\u00e7\u00e3o": 15.0,
+            "Fazenda 3": 5.0
+        },
+        "Fazenda 3": {
+            "Fazenda 1": 7.0,
+            "Fazenda 2": 5.0
+        }
+    }
+}
