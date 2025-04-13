@@ -22,6 +22,7 @@ def menu() -> None:
                 "Remover pedido",
                 "Listar pedidos",
                 "Calcular rota e gerar relatório",
+                "Exibir grafo",
                 "Sair"
             ]
         ).ask()
@@ -96,9 +97,12 @@ def menu() -> None:
             rota, distancia_total = calcular_rota(grafo, pedidos.pedidos)
             gerar_relatorio(rota, distancia_total, pedidos.pedidos)
         
+        elif opcao == "Exibir grafo":
+            grafo.exibir_grafo()
+        
         elif opcao == "Sair":
             print("Saindo...")
             break
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     menu()
