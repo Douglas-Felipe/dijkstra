@@ -78,8 +78,8 @@ Este projeto implementa um sistema para calcular rotas de entrega otimizadas com
 
 1.  **Clone o repositório:**
     ```bash
-    git clone <url-do-repositorio>
-    cd <diretorio-do-projeto>
+    git clone git@github.com:Douglas-Felipe/dijkstra.git
+    cd dijkstra
     ```
 2.  **Crie e ative um ambiente virtual (recomendado):**
     ```bash
