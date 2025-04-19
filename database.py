@@ -79,8 +79,9 @@ class Database:
 
     def salvar_grafo(self, nome_grafo: str, grafo: Grafo, pedidos: Pedidos) -> None:
         try:
-            self.cursor.execute("INSERT INTO grafos (nome) VALUES (:1) RETURNING id INTO :2", (nome_grafo, 0))
-            grafo_id = self.cursor.var(oracledb.NUMBER).getvalue()[0]
+            grafo_id_var = self.cursor.var(oracledb.NUMBER)
+            self.cursor.execute("INSERT INTO grafos (nome) VALUES (:1) RETURNING id INTO :2", (nome_grafo, grafo_id_var))
+            grafo_id = grafo_id_var.getvalue()[0]
             
             for node in grafo.nodes:
                 self.cursor.execute("INSERT INTO nodes (grafo_id, nome) VALUES (:1, :2)", (grafo_id, node))
